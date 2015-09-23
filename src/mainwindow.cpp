@@ -12,3 +12,13 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_chooseOriginFolder_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(
+                this,
+                tr("Choose Directory"),
+                "/home",
+                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+                );
+}
