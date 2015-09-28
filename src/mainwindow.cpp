@@ -56,6 +56,9 @@ void MainWindow::on_startButton_clicked()
     if(!originDir->exists() || !destinationDir->exists())
         return;
 
+    treeHelper->originRoot = originDir->path();
+    treeHelper->destinationRoot = destinationDir->path();
+
     QFileInfoList originFilesList = originDir->entryInfoList();
     QFileInfoList destinationFilesList = destinationDir->entryInfoList();
 
