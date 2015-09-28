@@ -19,6 +19,12 @@ public:
 private slots:
     void on_chooseOriginFolder_clicked();
 
+    void on_chooseDestinationFolder_clicked();
+
+    void on_originPathButton_clicked();
+
+    void on_destinationPathButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
