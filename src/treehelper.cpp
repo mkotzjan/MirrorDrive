@@ -12,6 +12,10 @@ void TreeHelper::addChildren(QTreeWidgetItem *item, QString filePath)
 
         foreach(QFileInfo fileInfo, filesList)
         {
+            if(fileInfo.isDir() && (fileInfo.fileName() == "." || fileInfo.fileName() == ".."))
+            {
+                continue;
+            }
             QTreeWidgetItem* child = new QTreeWidgetItem();
             child->setText(0,fileInfo.fileName());
 
@@ -25,6 +29,7 @@ void TreeHelper::addChildren(QTreeWidgetItem *item, QString filePath)
             if(fileInfo.isDir())
             {
                 child->setIcon(0,*(new QIcon(":/icons/folder.png")));
+                addChildren(child, fileInfo.filePath());
             }
             item->addChild(child);
         }
