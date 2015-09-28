@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QTreeWidgetItem>
+#include <treehelper.h>
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +27,11 @@ private slots:
 
     void on_destinationPathButton_clicked();
 
+    void on_startButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    TreeHelper* treeHelper;
 };
 
 #endif // MAINWINDOW_H

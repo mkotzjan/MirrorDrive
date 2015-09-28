@@ -13,8 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    treehelper.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    treehelper.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    qtresource.qrc
