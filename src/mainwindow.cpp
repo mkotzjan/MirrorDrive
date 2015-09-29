@@ -19,7 +19,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_startButton_clicked()
 {
-
+    fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
+    fileHelper->startMirror(ui->progressBar, ui->statusBar);
 }
 
 void MainWindow::on_setOriginPath_clicked()
