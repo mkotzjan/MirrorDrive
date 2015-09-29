@@ -1,4 +1,6 @@
 #include "filehelper.h"
+#include <QCryptographicHash>
+#include <QDebug>
 
 // ____________________________________________________________________________
 FileHelper::FileHelper()
@@ -77,7 +79,7 @@ void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
     int numberOfFiles = countFiles(originDir);
     progressBar->setMaximum(numberOfFiles);
 
-    // copyFiles();
+    copyFiles(originDir, progressBar, statusBar);
 }
 
 // ____________________________________________________________________________
@@ -101,4 +103,92 @@ int FileHelper::countFiles(QDir *dir)
         }
     }
     return result;
+}
+
+// ____________________________________________________________________________
+void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar)
+{
+    QFileInfoList fileList = dir->entryInfoList();
+    foreach(QFileInfo fileInfo, fileList)
+    {
+        if(fileInfo.isDir() && (fileInfo.fileName() == "." || fileInfo.fileName() == ".."))
+        {
+            continue;
+        }
+        else if(fileInfo.isFile())
+        {
+            // Display filepath and name in statusbar
+            statusBar->showMessage(fileInfo.absoluteFilePath());
+
+            // Check file and copy if needed
+            int result = compareFiles(fileInfo.filePath());
+            if(result == -1)
+            {
+                qDebug() << fileInfo.filePath() + " -> " + (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot) << endl;
+                // File doesn't exist. Copy.
+                bool test = QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+                qDebug() << test << endl;
+            }
+            else if (result == 0)
+            {
+                // File exist but differs. Override.
+                QFile::remove((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+            }
+
+            // Progress bar
+            int value = progressBar->value();
+            progressBar->setValue(++value);
+        }
+        else if(fileInfo.isDir())
+        {
+            qDebug() << "Dir:" << endl;
+            qDebug() << fileInfo.filePath() + " -> " + (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot) << endl;
+            QDir dir;
+            bool test = dir.mkpath((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+            qDebug() << test << endl;
+
+            copyFiles(new QDir(fileInfo.filePath()), progressBar, statusBar);
+        }
+    }
+}
+
+// ____________________________________________________________________________
+QByteArray FileHelper::getHash(QString path)
+{
+    QCryptographicHash hash1(QCryptographicHash::Sha1);
+    QFile file(path);
+
+    if (file.open( QIODevice::ReadOnly)) {
+        hash1.addData(file.readAll());
+    } else {
+        // Handle "cannot open file" error
+        throw "File could not be opened";
+    }
+
+    // Retrieve the SHA1 signature of the file
+    return hash1.result();
+}
+
+// ____________________________________________________________________________
+int FileHelper::compareFiles(QString path)
+{
+    QString origin = QString(path);
+    QString destination = path.replace(originRoot, destinationRoot);
+
+    if(QFile::exists(destination))
+    {
+        if(getHash(origin) == getHash(destination))
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return -1;
+    }
 }

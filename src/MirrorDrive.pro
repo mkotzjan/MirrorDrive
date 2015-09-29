@@ -20,3 +20,5 @@ HEADERS  += mainwindow.h \
     filehelper.h
 
 FORMS    += mainwindow.ui
+
+CONFIG += debug

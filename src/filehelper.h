@@ -29,6 +29,15 @@ public:
     // Count the files inside a folder
     int countFiles(QDir* dir);
 
+    // Copy the files
+    void copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar);
+
+    // Get Hash of file
+    QByteArray getHash(QString path);
+
+    // Check if file exists in destination folder and compare
+    int compareFiles(QString path);
+
 private:
     int originDirStatus;
     int destinationDirStatus;
