@@ -124,10 +124,8 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
             int result = compareFiles(fileInfo.filePath());
             if(result == -1)
             {
-                qDebug() << fileInfo.filePath() + " -> " + (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot) << endl;
                 // File doesn't exist. Copy.
-                bool test = QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
-                qDebug() << test << endl;
+                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
             }
             else if (result == 0)
             {
@@ -142,11 +140,8 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
         }
         else if(fileInfo.isDir())
         {
-            qDebug() << "Dir:" << endl;
-            qDebug() << fileInfo.filePath() + " -> " + (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot) << endl;
             QDir dir;
-            bool test = dir.mkpath((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
-            qDebug() << test << endl;
+            dir.mkpath((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
 
             copyFiles(new QDir(fileInfo.filePath()), progressBar, statusBar);
         }
