@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-09-23T19:21:15
+# Project created by QtCreator 2015-09-29T14:19:14
 #
 #-------------------------------------------------
 
@@ -13,13 +13,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    treehelper.cpp
+        mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    treehelper.h
+HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
-
-RESOURCES += \
-    qtresource.qrc
