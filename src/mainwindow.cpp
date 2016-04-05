@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     fileHelper = new FileHelper();
+    databaseHelper = new databasehelper;
     ui->setupUi(this);
     ui->editOriginPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
     ui->editDestinationPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");

@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <databasehelper.h>
 #include <filehelper.h>
 #include <QMainWindow>
 #include <QFileDialog>
@@ -31,6 +32,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FileHelper *fileHelper;
+    databasehelper *databaseHelper;
 };
 
 #endif // MAINWINDOW_H
