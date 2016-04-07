@@ -6,7 +6,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     fileHelper = new FileHelper();
-    databaseHelper = new databasehelper;
     ui->setupUi(this);
     ui->editOriginPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
     ui->editDestinationPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
@@ -21,7 +20,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_startButton_clicked()
 {
     fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
-    fileHelper->startMirror(ui->progressBar, ui->statusBar);
+    //fileHelper->startMirror(ui->progressBar, ui->statusBar);
+    fileHelper->checkPreferences(this);
 }
 
 void MainWindow::on_setOriginPath_clicked()

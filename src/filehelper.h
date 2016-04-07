@@ -23,6 +23,14 @@ public:
     // Set dir
     void setDir(QString origin, QString destination);
 
+    // Check if both directorys contains the preferences files and a database
+    // exists. Otherwise show information dialog and create files. Return if
+    // mirroring is possible
+    bool checkPreferences(QWidget* widget);
+
+    // Check if the preferences match
+    bool comparePreferences();
+
     // Start mirror
     void startMirror(QProgressBar* progressBar, QStatusBar* statusBar);
 
@@ -44,6 +52,9 @@ private:
 
     QString originRoot;
     QString destinationRoot;
+
+    QString originPreference;
+    QString destinationPreference;
 };
 
 #endif // FILEHELPER_H
