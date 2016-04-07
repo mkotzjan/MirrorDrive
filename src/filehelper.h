@@ -23,16 +23,8 @@ public:
     // Set dir
     void setDir(QString origin, QString destination);
 
-    // Check if both directorys contains the preferences files and a database
-    // exists. Otherwise show information dialog and create files. Return if
-    // mirroring is possible
-    bool checkPreferences(QWidget* widget);
-
-    // Check if the preferences match
-    bool comparePreferences();
-
     // Start mirror
-    void startMirror(QProgressBar* progressBar, QStatusBar* statusBar);
+    void startMirror(QWidget* widget, QProgressBar* progressBar, QStatusBar* statusBar);
 
     // Count the files inside a folder
     int countFiles(QDir* dir);
@@ -55,6 +47,17 @@ private:
 
     QString originPreference;
     QString destinationPreference;
+
+    // Check if both directorys contains the preferences files and a database
+    // exists. Otherwise show information dialog and create files. Return if
+    // mirroring is possible
+    bool checkPreferences(QWidget* widget);
+
+    // Check if the preferences match
+    bool comparePreferences();
+
+    // Creates preferences and/or set timestamp
+    void setTimestamp();
 };
 
 #endif // FILEHELPER_H

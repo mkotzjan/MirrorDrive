@@ -78,13 +78,10 @@ bool FileHelper::checkPreferences(QWidget* widget)
 {
     bool sourceExists = QFile::exists(originRoot + originPreference);
     bool destinationExists = QFile::exists(destinationRoot + destinationPreference);
-    QDateTime current;
-    int timestamp;
 
     if (sourceExists && destinationExists)
     {
         // Both files exists
-        qDebug() << "Both.";
         if(!comparePreferences())
         {
             QMessageBox::StandardButton reply;
@@ -93,25 +90,7 @@ bool FileHelper::checkPreferences(QWidget* widget)
             if (reply != QMessageBox::Yes) {
                 return false;
             }
-            // Get timestamp, open files and append as id
-            current = QDateTime::currentDateTime();
-            timestamp = current.toTime_t();
-
-            // Write to origin
-            QFile origin(originRoot + originPreference);
-            if(!origin.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-                QMessageBox::information(0, "error", origin.errorString());
-            QTextStream out(&origin);
-            out << timestamp << endl;
-            origin.close();
-
-            // Write to destination
-            QFile destination(destinationRoot + destinationPreference);
-            if(!destination.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-                QMessageBox::information(0, "error", destination.errorString());
-            QTextStream out2(&destination);
-            out2 << timestamp << endl;
-            destination.close();
+            setTimestamp();
         }
         return true;
 
@@ -123,7 +102,8 @@ bool FileHelper::checkPreferences(QWidget* widget)
         reply = QMessageBox::question(widget, "MirrorDrive", "Destination folder was never used before. Continue?",
                                         QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-
+            setTimestamp();
+            return true;
         }
     } else if (destinationExists)
     {
@@ -133,7 +113,8 @@ bool FileHelper::checkPreferences(QWidget* widget)
         reply = QMessageBox::question(widget, "MirrorDrive", "Source folder was never used before. Continue?",
                                         QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-
+            setTimestamp();
+            return true;
         }
     } else
     {
@@ -142,9 +123,9 @@ bool FileHelper::checkPreferences(QWidget* widget)
         reply = QMessageBox::question(widget, "MirrorDrive", "Neither the source or destination folder was used before. Continue?",
                                         QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-
+            setTimestamp();
+            return true;
         }
-        qDebug() << "None.";
     }
     return false;
 }
@@ -209,8 +190,36 @@ bool FileHelper::comparePreferences()
 }
 
 // ____________________________________________________________________________
-void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
+void FileHelper::setTimestamp()
 {
+    // Get timestamp, open files and append as id
+    QDateTime current = QDateTime::currentDateTime();
+    int timestamp = current.toTime_t();
+
+    // Write to origin
+    QFile origin(originRoot + originPreference);
+    if(!origin.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
+        QMessageBox::information(0, "error", origin.errorString());
+    QTextStream out(&origin);
+    out << timestamp << endl;
+    origin.close();
+
+    // Write to destination
+    QFile destination(destinationRoot + destinationPreference);
+    if(!destination.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
+        QMessageBox::information(0, "error", destination.errorString());
+    QTextStream out2(&destination);
+    out2 << timestamp << endl;
+    destination.close();
+}
+
+// ____________________________________________________________________________
+void FileHelper::startMirror(QWidget* widget, QProgressBar* progressBar, QStatusBar* statusBar)
+{
+    if(!checkPreferences(widget))
+        return;
+    qDebug()<<"Run.";
+    /*
     QDir* originDir = new QDir(originRoot);
     // QDir* destinationDir = new QDir(destinationRoot);
 
@@ -219,6 +228,7 @@ void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
     progressBar->setMaximum(numberOfFiles);
 
     copyFiles(originDir, progressBar, statusBar);
+    */
 }
 
 // ____________________________________________________________________________
