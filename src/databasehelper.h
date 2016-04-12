@@ -3,11 +3,11 @@
 
 #include <QtSql>
 
-class databasehelper
+class DatabaseHelper
 {
     QSqlDatabase db;
 public:
-    databasehelper();
+    DatabaseHelper();
 };
 
 #endif // DATABASEHELPER_H

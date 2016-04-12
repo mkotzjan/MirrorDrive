@@ -32,7 +32,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FileHelper *fileHelper;
-    databasehelper *databaseHelper;
+    DatabaseHelper *databaseHelper;
 };
 
 #endif // MAINWINDOW_H

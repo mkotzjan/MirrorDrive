@@ -2,7 +2,7 @@
 #include "QDebug"
 #include "QFile"
 
-databasehelper::databasehelper()
+DatabaseHelper::DatabaseHelper()
 {
     db = QSqlDatabase();
     db.addDatabase("QSQLITE");
