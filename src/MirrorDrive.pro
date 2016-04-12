@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += sql
 
-greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = MirrorDrive
 TEMPLATE = app
@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     filehelper.cpp \
-    databasehelper.cpp
+    databasehelper.cpp \
+    errorhelper.cpp
 
 HEADERS  += mainwindow.h \
     filehelper.h \
-    databasehelper.h
+    databasehelper.h \
+    errorhelper.h
 
 FORMS    += mainwindow.ui
 
