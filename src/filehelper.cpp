@@ -2,7 +2,6 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDebug>
-#include <QMessageBox>
 
 // ____________________________________________________________________________
 FileHelper::FileHelper()
@@ -74,74 +73,59 @@ void FileHelper::setDir(QString origin, QString destination)
 }
 
 // ____________________________________________________________________________
-bool FileHelper::checkPreferences(QWidget* widget)
+ErrorHelper FileHelper::checkPreferences()
 {
     bool sourceExists = QFile::exists(originRoot + originPreference);
     bool destinationExists = QFile::exists(destinationRoot + destinationPreference);
+    ErrorHelper result;
+    result.setState(1);
 
     if (sourceExists && destinationExists)
     {
-        // Both files exists
-        if(!comparePreferences())
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(widget, "MirrorDrive", "The two folders where never used together to mirror them. Continue?",
-                                            QMessageBox::Yes|QMessageBox::No);
-            if (reply != QMessageBox::Yes) {
-                return false;
-            }
-            setTimestamp();
-        }
-        return true;
+        // Both file exists
+        result = comparePreferences();
 
+        // If there was an error pass it through. If everything was ok pass it as well
+        if (result.getState() != 1)
+        {
+            return result;
+        }
+        // Return state 1 with the question
+        result.setMessage("The two folders where never used together to mirror them. Continue?");
+        return result;
     } else if (sourceExists)
     {
         // Only source exists
-        qDebug() << "Source.";
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(widget, "MirrorDrive", "Destination folder was never used before. Continue?",
-                                        QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            setTimestamp();
-            return true;
-        }
+        result.setMessage("Destination folder was never used before. Continue?");
+        return result;
     } else if (destinationExists)
     {
         // Only destination exists
-        qDebug() << "Destination.";
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(widget, "MirrorDrive", "Source folder was never used before. Continue?",
-                                        QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            setTimestamp();
-            return true;
-        }
+        result.setState(2);
+        result.setMessage("Destination folder was used before and therefore cannot be used again.");
+        return result;
     } else
     {
-        // None exists
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(widget, "MirrorDrive", "Neither the source or destination folder was used before. Continue?",
-                                        QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            setTimestamp();
-            return true;
-        }
+        result.setMessage("Neither the source or destination folder was used before. Continue?");
+        return result;
     }
-    return false;
 }
 
 // ____________________________________________________________________________
-bool FileHelper::comparePreferences()
+ErrorHelper FileHelper::comparePreferences()
 {
     QVector<QString> originIDs;
     QVector<QString> destinationIDs;
     QFile originFile(originRoot + originPreference);
     QFile destinationFile(destinationRoot + destinationPreference);
+    ErrorHelper result;
 
     // Read origin
     if(!originFile.open(QIODevice::ReadOnly))
     {
-        QMessageBox::information(0, "error", originFile.errorString());
+        result.setState(2);
+        result.setMessage(originFile.errorString());
+        return result;
     }
 
     QTextStream in(&originFile);
@@ -152,10 +136,13 @@ bool FileHelper::comparePreferences()
     }
 
     originFile.close();
+
     // Read destination
     if(!destinationFile.open(QIODevice::ReadOnly))
     {
-        QMessageBox::information(0, "error", destinationFile.errorString());
+        result.setState(2);
+        result.setMessage(originFile.errorString());
+        return result;
     }
 
     QTextStream in2(&destinationFile);
@@ -169,55 +156,79 @@ bool FileHelper::comparePreferences()
 
     // Check if one of both is empty
     if(originIDs.empty() || destinationIDs.empty())
-        return false;
+    {
+        result.setState(1);
+        return result;
+    }
     // Compare Id's
     if(originIDs.size() > destinationIDs.size())
     {
         for(int i = 0; i < originIDs.size(); ++i)
         {
             if(destinationIDs.contains(originIDs.value(i)))
-                return true;
+            {
+                result.setState(0);
+                return result;
+            }
         }
     } else
     {
         for(int i = 0; i < destinationIDs.size(); ++i)
         {
             if(originIDs.contains(destinationIDs.value(i)))
-                return true;
+            {
+                result.setState(0);
+                return result;
+            }
         }
     }
-    return false;
+    result.setState(1);
+    return result;
 }
 
 // ____________________________________________________________________________
-void FileHelper::setTimestamp()
+ErrorHelper FileHelper::setTimestamp()
 {
+    ErrorHelper result;
     // Get timestamp, open files and append as id
     QDateTime current = QDateTime::currentDateTime();
     int timestamp = current.toTime_t();
+    qDebug() << timestamp;
 
+    qDebug() << "Start Source";
     // Write to origin
     QFile origin(originRoot + originPreference);
+    qDebug() << "file path created";
     if(!origin.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-        QMessageBox::information(0, "error", origin.errorString());
+    {
+        result.setState(2);
+        result.setMessage(origin.errorString());
+        return result;
+    }
     QTextStream out(&origin);
     out << timestamp << endl;
     origin.close();
 
+    qDebug() << "Start destination";
     // Write to destination
     QFile destination(destinationRoot + destinationPreference);
     if(!destination.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-        QMessageBox::information(0, "error", destination.errorString());
+    {
+        result.setState(2);
+        result.setMessage(origin.errorString());
+        return result;
+    }
     QTextStream out2(&destination);
     out2 << timestamp << endl;
     destination.close();
+
+    result.setState(0);
+    return result;
 }
 
 // ____________________________________________________________________________
-void FileHelper::startMirror(QWidget* widget, QProgressBar* progressBar, QStatusBar* statusBar)
+void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
 {
-    if(!checkPreferences(widget))
-        return;
     qDebug()<<"Run.";
     /*
     QDir* originDir = new QDir(originRoot);

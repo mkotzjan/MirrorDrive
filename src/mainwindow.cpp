@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,7 +21,27 @@ MainWindow::~MainWindow()
 void MainWindow::on_startButton_clicked()
 {
     fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
-    fileHelper->startMirror(this, ui->progressBar, ui->statusBar);
+    ErrorHelper result = fileHelper->checkPreferences();
+
+    switch(result.getState())
+    {
+    case 2:
+        QMessageBox::information(0, "Error", result.getMessage());
+        return;
+    case 1:
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "MirrorDrive", result.getMessage(),
+                                        QMessageBox::Yes|QMessageBox::No);
+        if (reply != QMessageBox::Yes)
+        {
+            return;
+        }
+        ErrorHelper setTime = fileHelper->setTimestamp();
+        if (setTime.getState() == 2)
+            QMessageBox::information(0, "Error", setTime.getMessage());
+        break;
+    }
+    fileHelper->startMirror(ui->progressBar, ui->statusBar);
 }
 
 void MainWindow::on_setOriginPath_clicked()

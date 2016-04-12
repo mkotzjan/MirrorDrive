@@ -1,6 +1,7 @@
 #ifndef FILEHELPER_H
 #define FILEHELPER_H
 
+#include <errorhelper.h>
 #include <QString>
 #include <QFileDialog>
 #include <QProgressBar>
@@ -23,8 +24,15 @@ public:
     // Set dir
     void setDir(QString origin, QString destination);
 
+    // Check if both directorys contains the preferences files and a database
+    // exists. Returns a ErrorHelper object.
+    ErrorHelper checkPreferences();
+
+    // Creates preferences and/or set timestamp
+    ErrorHelper setTimestamp();
+
     // Start mirror
-    void startMirror(QWidget* widget, QProgressBar* progressBar, QStatusBar* statusBar);
+    void startMirror(QProgressBar* progressBar, QStatusBar* statusBar);
 
     // Count the files inside a folder
     int countFiles(QDir* dir);
@@ -48,16 +56,8 @@ private:
     QString originPreference;
     QString destinationPreference;
 
-    // Check if both directorys contains the preferences files and a database
-    // exists. Otherwise show information dialog and create files. Return if
-    // mirroring is possible
-    bool checkPreferences(QWidget* widget);
-
-    // Check if the preferences match
-    bool comparePreferences();
-
-    // Creates preferences and/or set timestamp
-    void setTimestamp();
+    // Check if the preferences match and return a ErrorHelper object
+    ErrorHelper comparePreferences();
 };
 
 #endif // FILEHELPER_H
