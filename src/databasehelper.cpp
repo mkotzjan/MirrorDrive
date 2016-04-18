@@ -24,7 +24,11 @@ ErrorHelper DatabaseHelper::openDatabase(QString name)
     {
         qDebug() << "Hat nicht existiert";
         QSqlQuery query(db);
-        query.exec("create table test(name text, alter int)");
+        qDebug() << query.exec("create table person "
+                  "(id integer primary key, "
+                  "firstname varchar(20), "
+                  "lastname varchar(30), "
+                  "age integer)");
     }
     return result;
 }
