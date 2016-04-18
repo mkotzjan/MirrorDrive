@@ -2,24 +2,39 @@
 #include "QDebug"
 #include "QFile"
 
-DatabaseHelper::DatabaseHelper()
+// ____________________________________________________________________________
+ErrorHelper DatabaseHelper::openDatabase(QString name)
 {
-    db = QSqlDatabase();
-    db.addDatabase("QSQLITE");
-    QString dbName = "test.db";
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-        if( QFile::exists(dbName))
-            {
-                qDebug()<<"Data base exist....";
-            }
-            else {
-                qDebug()<<"Data base not exist creating new....";
-                db.setDatabaseName(dbName);
-                db.open(); // <<< Add this!
+    ErrorHelper result;
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "Database");
+    bool exist = QFile::exists(name);
 
-                if(!db.isOpen()) {
-                    qDebug() << "ERROR: could not open database";
-                }
-                qDebug() << "DB opened";
-            }
+    db.setDatabaseName(name);
+    db.open();
+
+    if(!db.isOpen())
+    {
+        result.setState(2);
+        result.setMessage("Could not open database on path '" + name + "'.");
+        return result;
+    }
+
+    // TODO: Create Tables
+    if(!exist)
+    {
+        qDebug() << "Hat nicht existiert";
+        QSqlQuery query(db);
+        query.exec("create table test(name text, alter int)");
+    }
+    return result;
+}
+
+// ____________________________________________________________________________
+void DatabaseHelper::closeDatabase()
+{
+    {
+        QSqlDatabase db = QSqlDatabase::database("Database");
+        db.close();
+    }
+    QSqlDatabase::removeDatabase("Database");
 }

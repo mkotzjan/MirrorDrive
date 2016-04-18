@@ -20,6 +20,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_startButton_clicked()
 {
+    DatabaseHelper::openDatabase("/home/michael/MirrorDriveTest/test.db");
+    DatabaseHelper::closeDatabase();
     fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
     ErrorHelper result = fileHelper->checkPreferences();
 
