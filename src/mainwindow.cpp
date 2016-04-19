@@ -8,13 +8,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     fileHelper = new FileHelper();
     ui->setupUi(this);
+    originCompleter = new QCompleter(this);
+    destinationCompleter = new QCompleter(this);
+    QStringList filter;
+    originCompleter->setModel(new QDirModel(filter, QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name, originCompleter));
+    destinationCompleter->setModel(new QDirModel(filter, QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name, destinationCompleter));
+    ui->editOriginPath->setCompleter(originCompleter);
     ui->editOriginPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
+    ui->editDestinationPath->setCompleter(destinationCompleter);
     ui->editDestinationPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
 }
 
 MainWindow::~MainWindow()
 {
     delete fileHelper;
+    delete originCompleter;
+    delete destinationCompleter;
     delete ui;
 }
 

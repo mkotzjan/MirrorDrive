@@ -3,6 +3,8 @@
 
 #include <databasehelper.h>
 #include <filehelper.h>
+#include <QCompleter>
+#include <QDirModel>
 #include <QMainWindow>
 #include <QFileDialog>
 
@@ -13,6 +15,8 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    QCompleter *originCompleter;
+    QCompleter *destinationCompleter;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
