@@ -55,9 +55,16 @@ private:
 
     QString originPreference;
     QString destinationPreference;
+    QString database;
 
     // Check if the preferences match and return a ErrorHelper object
     ErrorHelper comparePreferences();
+
+    // Return the relative file path in relation to the root path
+    QString getRelativeFile(QString path);
+
+    // Return the dir path in relation to the root path
+    QString getRelativeDir(QString path);
 };
 
 #endif // FILEHELPER_H

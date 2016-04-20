@@ -12,6 +12,7 @@ FileHelper::FileHelper()
     destinationRoot = "";
     originPreference = "/.source.mirror";
     destinationPreference = "/.destination.mirror";
+    database = "/.mirror.db";
 }
 
 // ____________________________________________________________________________
@@ -230,16 +231,13 @@ ErrorHelper FileHelper::setTimestamp()
 void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
 {
     qDebug()<<"Run.";
-    /*
     QDir* originDir = new QDir(originRoot);
     // QDir* destinationDir = new QDir(destinationRoot);
 
-    QFileInfoList originFilesList = originDir->entryInfoList();
     int numberOfFiles = countFiles(originDir);
     progressBar->setMaximum(numberOfFiles);
-
-    copyFiles(originDir, progressBar, statusBar);
-    */
+    qDebug() << "Filecount: " << numberOfFiles;
+    // copyFiles(originDir, progressBar, statusBar);
 }
 
 // ____________________________________________________________________________
@@ -255,6 +253,9 @@ int FileHelper::countFiles(QDir *dir)
         }
         else if(fileInfo.isFile())
         {
+            qDebug() << "Name: " << getRelativeFile(fileInfo.filePath());
+            qDebug() << "Dir: " << getRelativeDir(fileInfo.filePath());
+            qDebug() << fileInfo.filePath();
             ++result;
         }
         else if(fileInfo.isDir())
@@ -346,4 +347,18 @@ int FileHelper::compareFiles(QString path)
     {
         return -1;
     }
+}
+
+// ____________________________________________________________________________
+QString FileHelper::getRelativeFile(QString path)
+{
+    return path.remove(originRoot);
+}
+
+// ____________________________________________________________________________
+QString FileHelper::getRelativeDir(QString path)
+{
+    path = getRelativeFile(path);
+    path.truncate(path.lastIndexOf("/"));
+    return path;
 }
