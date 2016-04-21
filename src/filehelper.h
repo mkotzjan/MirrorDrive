@@ -38,7 +38,7 @@ public:
     int countFiles(QDir* dir);
 
     // Copy the files
-    void copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar);
+    void copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar, bool copyAll);
 
     // Get Hash of file
     QByteArray getHash(QString path);

@@ -237,7 +237,7 @@ void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
     int numberOfFiles = countFiles(originDir);
     progressBar->setMaximum(numberOfFiles);
     qDebug() << "Filecount: " << numberOfFiles;
-    copyFiles(originDir, progressBar, statusBar);
+    copyFiles(originDir, progressBar, statusBar, false);
 }
 
 // ____________________________________________________________________________
@@ -264,18 +264,22 @@ int FileHelper::countFiles(QDir *dir)
 }
 
 // ____________________________________________________________________________
-void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar)
+void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar, bool copyAll)
 {
-    bool copyAll = false;
     QSqlQuery query(QSqlDatabase::database("Database"));
     QString dirPath = getRelativeFile(dir->path());
+    int value;
 
-    query.exec("select count(*) from folder where path = '" + dirPath + "';");
-    query.first();
-    copyAll = !query.value(0).toBool();
-    qDebug() << "Path:" << dir->path();
-    qDebug() << "Dir:" << dirPath;
-    qDebug() << "CopyAll: " << copyAll;
+    if (!copyAll)
+    {
+        query.exec("select count(*) from folder where path = '" + dirPath + "';");
+        query.first();
+        copyAll = !query.value(0).toBool();
+        qDebug() << "Path:" << dir->path();
+        qDebug() << "Dir:" << dirPath;
+        qDebug() << "CopyAll: " << copyAll;
+    }
+
     if (copyAll)
     {
         query.exec("insert into folder values(null, '" + dirPath + "');");
@@ -308,7 +312,7 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
 //            }
 
             // Progress bar
-            int value = progressBar->value();
+            value = progressBar->value();
             progressBar->setValue(++value);
         }
         else if(fileInfo.isDir())
@@ -316,7 +320,7 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
             QDir dir;
             dir.mkpath((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
 
-            copyFiles(new QDir(fileInfo.filePath()), progressBar, statusBar);
+            copyFiles(new QDir(fileInfo.filePath()), progressBar, statusBar, copyAll);
         }
     }
 }
