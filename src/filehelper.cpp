@@ -234,6 +234,7 @@ void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
     QDir* originDir = new QDir(originRoot);
     // QDir* destinationDir = new QDir(destinationRoot);
 
+    statusBar->showMessage("Counting files");
     int numberOfFiles = countFiles(originDir);
     progressBar->setMaximum(numberOfFiles);
     qDebug() << "Filecount: " << numberOfFiles;
@@ -268,7 +269,10 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
 {
     QSqlQuery query(QSqlDatabase::database("Database"));
     QString dirPath = getRelativeFile(dir->path());
+    QString filePath = "";
     int value;
+    int result;
+    int folderID = -1;
 
     if (!copyAll)
     {
@@ -294,9 +298,32 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
         }
         else if(fileInfo.isFile())
         {
+            filePath = getRelativeFile(fileInfo.absoluteFilePath());
             // Display filepath and name in statusbar
-            statusBar->showMessage("File: " + getRelativeFile(fileInfo.absoluteFilePath()));
+            statusBar->showMessage("File: " + filePath);
 
+            result = compareFiles(fileInfo.filePath(), copyAll);
+            if (copyAll)
+            {
+                if(result == -1)
+                {
+                    QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+                } else {
+                    QFile::remove((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+                    QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+                }
+
+                if (folderID >= 0)
+                {
+                    query.exec("select id from folder where path='" + dirPath + "';");
+                    query.first();
+                    folderID = query.value(0).toInt();
+                }
+
+                query.exec("insert into file (folder, path) values (" + QString::number(folderID) + ", '" + filePath + "');");
+            } else {
+
+            }
 //            // Check file and copy if needed
 //            int result = compareFiles(fileInfo.filePath());
 //            if(result == -1)
@@ -343,14 +370,18 @@ QByteArray FileHelper::getHash(QString path)
 }
 
 // ____________________________________________________________________________
-int FileHelper::compareFiles(QString path)
+int FileHelper::compareFiles(QString path, bool justCopy)
 {
     QString origin = QString(path);
     QString destination = path.replace(originRoot, destinationRoot);
 
     if(QFile::exists(destination))
     {
-        if(getHash(origin) == getHash(destination))
+        if(justCopy)
+        {
+            return 1;
+        }
+        else if(getHash(origin) == getHash(destination))
         {
             return 1;
         }

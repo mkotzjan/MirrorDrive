@@ -43,8 +43,8 @@ public:
     // Get Hash of file
     QByteArray getHash(QString path);
 
-    // Check if file exists in destination folder and compare
-    int compareFiles(QString path);
+    // Check if file exists in destination folder and compare or just copy
+    int compareFiles(QString path, bool justCopy);
 
 private:
     int originDirStatus;
