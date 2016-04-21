@@ -55,7 +55,6 @@ private:
 
     QString originPreference;
     QString destinationPreference;
-    QString database;
 
     // Check if the preferences match and return a ErrorHelper object
     ErrorHelper comparePreferences();
