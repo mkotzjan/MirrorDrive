@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->editOriginPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
     ui->editDestinationPath->setCompleter(destinationCompleter);
     ui->editDestinationPath->setStyleSheet("QLineEdit { border-style: outset; border-width: 2px; border-color: orange;}");
+
+    database = "/.mirror.db";
 }
 
 MainWindow::~MainWindow()
@@ -29,8 +31,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_startButton_clicked()
 {
-    DatabaseHelper::openDatabase("/home/michael/MirrorDriveTest/test.db");
-    DatabaseHelper::closeDatabase();
     fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
     ErrorHelper result = fileHelper->checkPreferences();
 
@@ -52,7 +52,16 @@ void MainWindow::on_startButton_clicked()
             QMessageBox::information(0, "Error", setTime.getMessage());
         break;
     }
+
+    result = DatabaseHelper::openDatabase(ui->editDestinationPath->text() + database);
+    if (result.getState() == 2)
+    {
+        QMessageBox::information(0, "Error", result.getMessage());
+        return;
+    }
+
     fileHelper->startMirror(ui->progressBar, ui->statusBar);
+    DatabaseHelper::closeDatabase();
 }
 
 void MainWindow::on_setOriginPath_clicked()

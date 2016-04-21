@@ -6,6 +6,7 @@
 #include <QCompleter>
 #include <QDirModel>
 #include <QMainWindow>
+#include <QString>
 #include <QFileDialog>
 
 namespace Ui {
@@ -37,6 +38,7 @@ private:
     Ui::MainWindow *ui;
     FileHelper *fileHelper;
     DatabaseHelper *databaseHelper;
+    QString database;
 };
 
 #endif // MAINWINDOW_H
