@@ -32,6 +32,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_startButton_clicked()
 {
     ui->progressBar->setValue(0);
+    ui->statusBar->showMessage("");
     fileHelper->setDir(ui->editOriginPath->text(), ui->editDestinationPath->text());
     ErrorHelper result = fileHelper->checkPreferences();
 

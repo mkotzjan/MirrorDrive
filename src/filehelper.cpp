@@ -295,7 +295,7 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
         else if(fileInfo.isFile())
         {
             // Display filepath and name in statusbar
-            statusBar->showMessage(fileInfo.absoluteFilePath());
+            statusBar->showMessage("File: " + getRelativeFile(fileInfo.absoluteFilePath()));
 
 //            // Check file and copy if needed
 //            int result = compareFiles(fileInfo.filePath());
