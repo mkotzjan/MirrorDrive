@@ -1,3 +1,7 @@
 TEMPLATE = subdirs
 SUBDIRS += MirrorDrive \
-    MirrorDriveTest
+    MirrorDriveTest \
+    MirrorDriveLib
+
+MirrorDrive.depends = MirrorDriveLib
+MirrorDriveTest.depends = MirrorDriveLib

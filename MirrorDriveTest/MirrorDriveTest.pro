@@ -23,3 +23,9 @@ HEADERS += \
     mirrordrivetest.h
 
 QT += testlib
+
+# Include the path to the header file include lookup path
+INCLUDEPATH += $$PWD/../MirrorDriveLib
+
+# Adds the MirrorDriveLib.lib to the linker
+unix:LIBS += -L$$OUT_PWD/../MirrorDriveLib/ -l MirrorDriveLib
