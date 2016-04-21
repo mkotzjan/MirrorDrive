@@ -34,5 +34,5 @@ Makefile*
 build-MemberDatabaseQt-Desktop_Qt_5_3_GCC_64bit-Debug
 
 # Tests
-Test/Source
-Test/Destination
+MirrorDrive/test/Source
+MirrorDrive/test/Destination
