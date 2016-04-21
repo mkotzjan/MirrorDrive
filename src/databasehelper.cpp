@@ -19,16 +19,20 @@ ErrorHelper DatabaseHelper::openDatabase(QString name)
         return result;
     }
 
+    QSqlQuery query(db);
+    query.exec("PRAGMA foreign_keys = ON;");
+
     // TODO: Create Tables
     if(!exist)
     {
-        qDebug() << "Hat nicht existiert";
-        QSqlQuery query(db);
-        qDebug() << query.exec("create table person "
+        query.exec("create table folder "
                   "(id integer primary key, "
-                  "firstname varchar(20), "
-                  "lastname varchar(30), "
-                  "age integer)");
+                  "path text);");
+        query.exec("create table file "
+                  "(id integer primary key, "
+                  "folder int,"
+                  "path text,"
+                  "FOREIGN KEY(folder) REFERENCES folder(id));");
     }
     return result;
 }
