@@ -2,6 +2,7 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDebug>
+#include <QSqlQuery>
 
 // ____________________________________________________________________________
 FileHelper::FileHelper()
@@ -12,7 +13,6 @@ FileHelper::FileHelper()
     destinationRoot = "";
     originPreference = "/.source.mirror";
     destinationPreference = "/.destination.mirror";
-    database = "/.mirror.db";
 }
 
 // ____________________________________________________________________________
@@ -237,7 +237,7 @@ void FileHelper::startMirror(QProgressBar* progressBar, QStatusBar* statusBar)
     int numberOfFiles = countFiles(originDir);
     progressBar->setMaximum(numberOfFiles);
     qDebug() << "Filecount: " << numberOfFiles;
-    // copyFiles(originDir, progressBar, statusBar);
+    copyFiles(originDir, progressBar, statusBar);
 }
 
 // ____________________________________________________________________________
@@ -253,9 +253,6 @@ int FileHelper::countFiles(QDir *dir)
         }
         else if(fileInfo.isFile())
         {
-            qDebug() << "Name: " << getRelativeFile(fileInfo.filePath());
-            qDebug() << "Dir: " << getRelativeDir(fileInfo.filePath());
-            qDebug() << fileInfo.filePath();
             ++result;
         }
         else if(fileInfo.isDir())
@@ -269,6 +266,21 @@ int FileHelper::countFiles(QDir *dir)
 // ____________________________________________________________________________
 void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar)
 {
+    bool copyAll = false;
+    QSqlQuery query(QSqlDatabase::database("Database"));
+    QString dirPath = getRelativeFile(dir->path());
+
+    query.exec("select count(*) from folder where path = '" + dirPath + "';");
+    query.first();
+    copyAll = !query.value(0).toBool();
+    qDebug() << "Path:" << dir->path();
+    qDebug() << "Dir:" << dirPath;
+    qDebug() << "CopyAll: " << copyAll;
+    if (copyAll)
+    {
+        query.exec("insert into folder values(null, '" + dirPath + "');");
+    }
+
     QFileInfoList fileList = dir->entryInfoList();
     foreach(QFileInfo fileInfo, fileList)
     {
@@ -281,19 +293,19 @@ void FileHelper::copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* sta
             // Display filepath and name in statusbar
             statusBar->showMessage(fileInfo.absoluteFilePath());
 
-            // Check file and copy if needed
-            int result = compareFiles(fileInfo.filePath());
-            if(result == -1)
-            {
-                // File doesn't exist. Copy.
-                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
-            }
-            else if (result == 0)
-            {
-                // File exist but differs. Override.
-                QFile::remove((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
-                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
-            }
+//            // Check file and copy if needed
+//            int result = compareFiles(fileInfo.filePath());
+//            if(result == -1)
+//            {
+//                // File doesn't exist. Copy.
+//                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+//            }
+//            else if (result == 0)
+//            {
+//                // File exist but differs. Override.
+//                QFile::remove((new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+//                QFile::copy(fileInfo.filePath(), (new QString(fileInfo.filePath()))->replace(originRoot, destinationRoot));
+//            }
 
             // Progress bar
             int value = progressBar->value();
