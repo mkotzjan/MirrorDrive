@@ -1,2 +1,3 @@
 TEMPLATE = subdirs
-SUBDIRS += MirrorDrive
+SUBDIRS += MirrorDrive \
+    MirrorDriveTest
