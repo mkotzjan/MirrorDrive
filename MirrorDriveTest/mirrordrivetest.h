@@ -2,6 +2,7 @@
 #define MIRRORDRIVETEST_H
 
 #include <QObject>
+#include <QtTest/QTest>
 
 class MirrorDriveTest : public QObject
 {
@@ -11,8 +12,8 @@ public:
 
 signals:
 
-public slots:
-
+private slots:
+    void mirrorDriveTestTest();
 };
 
 #endif // MIRRORDRIVETEST_H
