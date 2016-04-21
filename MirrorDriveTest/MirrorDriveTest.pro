@@ -11,8 +11,15 @@ QT       -= gui
 TARGET = MirrorDriveTest
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += testcase
 
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    mirrordrivetest.cpp
+
+HEADERS += \
+    mirrordrivetest.h
+
+QT += testlib
