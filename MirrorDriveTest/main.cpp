@@ -1,4 +1,11 @@
 #include <QtTest/QTest>
-#include "mirrordrivetest.h"
+#include "errorhelpertest.h"
 
-QTEST_APPLESS_MAIN( MirrorDriveTest )
+int main()
+{
+    ErrorHelperTest eht;
+
+    QTest::qExec(&eht);
+
+    return 0;
+}

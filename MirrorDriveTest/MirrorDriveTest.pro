@@ -17,10 +17,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    mirrordrivetest.cpp
+    errorhelpertest.cpp
 
 HEADERS += \
-    mirrordrivetest.h
+    errorhelpertest.h
 
 QT += testlib
 
