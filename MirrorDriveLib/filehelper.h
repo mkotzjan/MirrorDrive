@@ -9,7 +9,37 @@
 
 class FileHelper
 {
-public:
+    int originDirStatus;
+    int destinationDirStatus;
+
+    QString originRoot;
+    QString destinationRoot;
+
+    QString originPreference;
+    QString destinationPreference;
+
+    // Check if the preferences match and return a ErrorHelper object
+    ErrorHelper comparePreferences();
+
+    // Return the relative file path in relation to the root path
+    QString getRelativeFile(QString path);
+
+    // Return the dir path in relation to the root path
+    QString getRelativeDir(QString path);
+
+    // Count the files inside a folder
+    int countFiles(QDir* dir);
+
+    // Copy the files
+    void copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar, bool copyAll);
+
+    // Get Hash of file
+    QByteArray getHash(QString path);
+
+    // Check if file exists in destination folder and compare or just copy
+    int compareFiles(QString path, bool justCopy);
+
+    public:
     FileHelper();
 
     // Open directory dialog
@@ -33,37 +63,6 @@ public:
 
     // Start mirror
     void startMirror(QProgressBar* progressBar, QStatusBar* statusBar);
-
-    // Count the files inside a folder
-    int countFiles(QDir* dir);
-
-    // Copy the files
-    void copyFiles(QDir* dir, QProgressBar* progressBar, QStatusBar* statusBar, bool copyAll);
-
-    // Get Hash of file
-    QByteArray getHash(QString path);
-
-    // Check if file exists in destination folder and compare or just copy
-    int compareFiles(QString path, bool justCopy);
-
-private:
-    int originDirStatus;
-    int destinationDirStatus;
-
-    QString originRoot;
-    QString destinationRoot;
-
-    QString originPreference;
-    QString destinationPreference;
-
-    // Check if the preferences match and return a ErrorHelper object
-    ErrorHelper comparePreferences();
-
-    // Return the relative file path in relation to the root path
-    QString getRelativeFile(QString path);
-
-    // Return the dir path in relation to the root path
-    QString getRelativeDir(QString path);
 };
 
 #endif // FILEHELPER_H
